@@ -1,0 +1,35 @@
+#include <Arduino.h>
+#include "sensor.h"
+
+Current_S::Current_S(int pin):Sensor(pin){}
+
+float Current_S::interpret(unsigned int value)const{
+    int ACSoffset = 2500;
+    int VperAmp = 100;
+
+    double Voltage;
+    double Amps;
+
+    Voltage = (value / 1024.0) * 5000; // Gets you mV
+    Amps = ((Voltage - ACSoffset) / VperAmp);
+    return Amps;
+}
+
+float Current_S::interpret(float value)const{
+    int ACSoffset = 2500;
+    int VperAmp = 100;
+
+    double Voltage;
+    double Amps;
+
+    Voltage = (value / 1024.0) * 5000; // Gets you mV
+    Amps = ((Voltage - ACSoffset) / VperAmp);
+    return Amps;
+}
+
+void Current_S::serialPrintSensorName()const{
+  Serial.print("\t i ");
+}
+void Current_S::serialPrintUnit()const{
+  Serial.print(" Amps");
+}

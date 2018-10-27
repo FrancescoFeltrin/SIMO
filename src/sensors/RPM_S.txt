@@ -1,0 +1,87 @@
+#include <Arduino.h>
+#include "sensor.h"
+
+
+RPM_S::RPM_S(int pin):Hall_S(pin){}
+
+unsigned int RPM_S::readRaw()const{
+  //NB: THe output is in microseconds/4 because the resolution of the function
+  // "micros()" is 4 microseconds. Minimum RPM = 230
+
+  //interval between two edges in ms
+  unsigned int current_value;//the digital value of the incoming analog signals
+  unsigned int prev_value = 1;
+
+  unsigned long t_first, t_second; //time variables
+  unsigned long reading_time,t_start;
+
+  unsigned long DeltaT_mus = 0; //4,294,967,295 -> 4294 s
+  unsigned int DeltaT_ms = 0; //up to 65,535 -> x4 = 262 140 micros-> 0.26 s
+
+  unsigned long max_time; // [micro seconds] maximum time for the measurement
+
+
+  max_time = max(  65535*4,Sensor::revealMaxT());  // either the max value that fits in the output (unsigned int)
+  // Or what you set in the variable for the sensor
+  t_start=micros();
+  reading_time=0;
+  t_first = 0;
+  //Serial.print(" Start to Read ");
+  while(reading_time < max_time){
+     reading_time  = micros()-t_start;
+     current_value = Hall_S::readRaw();
+     if (prev_value == 0 && current_value == 1 && t_first > 0) { //Second rising edge
+        t_second = micros(); //millis()
+        /*Serial.print(" t2: ");
+        Serial.print(t_second);
+        //Serial.print(" t1 :");
+        Serial.print(" \t");
+        Serial.print(t_first);
+        //Serial.print(" D: ");
+        Serial.print(" \t ");*/
+        DeltaT_mus = t_second - t_first;
+        //Serial.print(DeltaT_mus);
+        //Serial.println();
+        reading_time=max_time+1;
+    }
+    if (prev_value == 0 && current_value == 1 && t_first == 0)
+        t_first = micros(); // First rising edge
+    prev_value = current_value;
+  }
+  DeltaT_mus = DeltaT_mus / 4; //compress to fit unsigned int
+  DeltaT_ms = (unsigned int) DeltaT_mus;
+  //Serial.print(" Conversion from long int : ");
+  //Serial.print(DeltaT_mus);
+  //Serial.print(" To int ");
+  //Serial.println(DeltaT_ms);
+  return DeltaT_ms;
+}
+
+float RPM_S::interpret(float DeltaT_mus)const{
+  float RPM;
+  if (DeltaT_mus > 0)
+      RPM=1000000.0 * 60.0 /( DeltaT_mus * 4.0);
+  else
+      RPM = 0;
+  //Serial.print("\t");
+  //Serial.println(RPM);
+  return  RPM;
+}
+
+float RPM_S::interpret(unsigned int DeltaT_mus)const{
+  float DeltaT_mus2 = (float) DeltaT_mus;
+  return interpret(DeltaT_mus2);
+}
+
+void RPM_S::serialPrintSensorName()const{
+  Serial.print("\t RPM_s ");
+};
+void RPM_S::serialPrintUnit()const{
+  Serial.print(" RPM");
+};
+
+void RPM_S::print2serial()const{
+  serialPrintSensorName();
+  Serial.print(Sensor::interpret()); //without 3 decimal places
+  serialPrintUnit();
+};

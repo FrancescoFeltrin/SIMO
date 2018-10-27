@@ -1,0 +1,24 @@
+#include <Arduino.h>
+#include "sensor.h"
+
+Hall_S::Hall_S(int pin):Sensor(pin){}
+void Hall_S::setPort(){
+  pinMode(rev_pin(), INPUT);
+}
+
+unsigned int Hall_S::readRaw()const{
+  int val=digitalRead(rev_pin());
+  int val_inverted=(val-1)*(-1);
+  return (unsigned int) val_inverted; //1 there is a magnet, 0 there is no magnet
+}
+
+float Hall_S::interpret(unsigned int value)const{
+  return (float) value; //there is no interpretation!
+}
+
+void Hall_S::serialPrintSensorName()const{
+  Serial.print("\t Hall: ");
+};
+void Hall_S::serialPrintUnit()const{
+  Serial.print(" ");
+};

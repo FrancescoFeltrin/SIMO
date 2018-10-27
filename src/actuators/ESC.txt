@@ -1,0 +1,121 @@
+// include core Wiring API
+//#include "WProgram.h"
+#include <Arduino.h>
+// include this library's description file
+#include "../include/actuators/actuator.h"
+// include description files for other libraries used (if any)
+#include "Servo.h"
+
+ESC::ESC(int Pin, int V_min, int V_max, int SL):pin(Pin),V_min(V_min),V_max(V_max),soft_lim(SL),current_value(V_min){
+  srv_ptr = new Servo; //the only one servo..
+}
+
+ESC::~ESC(){
+  delete srv_ptr;
+}
+void ESC::setSoftlim(int SL){
+  if (SL>100) SL = 100;
+  if (SL<0) SL = 10;
+  soft_lim = SL;
+}
+void ESC::setSpeed(int Value){
+  if (Value > V_max)
+      Value = V_max;
+  (*srv_ptr).writeMicroseconds((int) Value);
+  //Serial.print("\t Write To microseconds(): " );
+  //Serial.println(Value);
+  current_value=Value;
+}
+
+void ESC::Speed_100(float Speed){
+  if ( Speed > soft_lim )
+      Speed = soft_lim;
+  if ( Speed <= 0 )
+      Speed = 0;
+  float f = Speed/100.0*(V_max-V_min);
+  int v = (int) f+V_min;
+  /*Serial.print("\t Esc: Recieved input ");
+  Serial.print(Speed);
+  Serial.print(" %");*/
+  setSpeed(v);
+}
+void ESC::low(){
+  current_value = V_min;
+  (*srv_ptr).writeMicroseconds(V_min);
+}
+void ESC::high(){
+  current_value = V_max;
+  (*srv_ptr).writeMicroseconds(V_max);
+}
+
+void ESC::set_up(){
+  int value = 0;
+  int countTo1000 = 0;
+  bool exit = false;
+  srv_ptr->attach(pin);
+  low();
+  Serial.println("Initialize ESC(ONLY the first time)?  1 = YES / 2 = NO");
+  while (exit == false){
+    if(Serial.available()>0){
+      value = Serial.parseInt();
+      if (value==1){
+        initialize();
+        exit = true;
+      }
+      if (value==2) exit = true;
+   }
+   delay(5);
+   countTo1000++;
+   if (countTo1000>1000) exit = true;
+  }
+  Serial.print("Initialization over.");
+  low();
+}
+
+void ESC::initialize(){
+  //set the max and min speed
+  int value = 0;
+  bool exit1 = false;
+  bool exit2 = false;
+  Serial.println( "Setting top Speed (press 1 when you hear long beep-beep)");
+  high();
+  while (exit1 == false){
+    if(Serial.available()>0){
+      value = Serial.parseInt();
+      if (value==1){
+        exit1 = true;
+        value = 0;
+        Serial.println( "Top speed set, Setting LOW Speed (press 1 after a lot of long beeps)" );
+        low();
+        while (exit2 == false){
+          if(Serial.available()>0){
+            value = Serial.parseInt();
+            if (value==1) exit2 = true;
+          }
+        }
+        }
+      }
+    }
+  Serial.println("Initialization is Done! ");
+}
+
+void ESC::print2serial(){
+    setSpeed(current_value);
+    Serial.print(" -ESC input  ");
+    Serial.print((current_value-V_min)*1.0/(V_max-V_min)*100);
+    Serial.print(" %");
+}
+
+float ESC::inputMin() const{
+  return 5;
+};
+float ESC::inputMax() const{
+  return soft_lim;
+};
+void ESC::command(float input){
+  Speed_100(input);
+}; //pass the comand to the actual actuator
+
+void ESC::printSerialUnit() const{
+  Serial.print(" % ");
+};
