@@ -2,42 +2,63 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
+#include "../units/units.h"
 // include types & constants of Wiring core API
 //#include <Arduino.h>
+/* A minimal interface for a sensor class:
+  - "data" is a class that stores both a value and the error. It automatically perfor
+    basic error propagation (it adds errors in the "right way")
+  - "readRaw" provides the fastest, minimal overhead to read the hardware. It does
+    no interpretation of the data. In this way, you can sample multiple sensor in
+    rapid succession and pretend you have simultaneous readings.
+  - "interpret" produces a data that is in the unit identified by "unit()"
+  - "Data" is a simple readRaw+ average+ interpret.
+*/
+
 
 class Sensor{
+public:
+  Sensor();
+  virtual data readRaw() const = 0; // quickest possible way to get data, no processing
+  virtual data interpret(const data &) const = 0; //applies the interpretation function
+  virtual data read(unsigned int = 3) const;      // reads n times and then interprets the average
+
+  virtual int minValue() const = 0;   // Minium interpreted value
+  virtual int maxValue() const = 0;
+  virtual char id() const = 0;    // Individual sensor name
+  virtual char unit() const = 0;  // unit of the interpreted value
+};
+
+
+class DigitalS: public Sensor{
 private:
   int pin;
-  unsigned long maxTimeMicro; //maximum time for a single reading
+  char name;
 public:
-  Sensor(int);
-  Sensor(int, unsigned long);
-  int rev_pin() const; //reveal pin, useful for derived classes
-  //float readStat(int) const; //read n times and return average
-  void setMaxT(unsigned long);
-  unsigned int revealMaxT() const;
-  virtual unsigned int readRaw() const=0; //digital read, without interpretation (by default the analogue one)
-  virtual float interpret(unsigned int) const=0; //process a data given
-  virtual float interpret(float) const;
-  virtual float interpret() const;// read curret data and interpret
-  virtual float quickRead(int = 5) const; // Multiple read, return interpreted average
-  virtual float interpretDeltaAt(float,float) const; //if sensitivity is not linear, this is important
-  //virtual float interpretDerivative() const;
-  virtual void print2serial() const;
-  virtual void serialPrintSensorName() const=0; // Show class Identifier
-  virtual void serialPrintUnit() const=0; // ->interpreted signal units
+  DigitalS(int,char);
+  virtual data readRaw() const;
+  virtual int minValue() const;
+  virtual int maxValue() const;
+  virtual char id() const;
+  virtual char unit() const;
 };
 
-/* The whole implementation is beside the point
-class Current_S: public Sensor{
+class AnalogS: public Sensor{
+private:
+  int pin;
+  char name;
 public:
-  Current_S(int);
-  virtual float interpret(unsigned int) const; //interpret in amps
-  virtual float interpret(float) const;
-  virtual void serialPrintSensorName() const; // Show class Identifier
-  virtual void serialPrintUnit() const; // ->interpreted signal units
+  AnalogS(int,char);
+  virtual data readRaw() const;
+  virtual int minValue() const;
+  virtual int maxValue() const;
+  virtual char id() const;
+  virtual char unit() const;
 };
 
+
+
+/*
 class Hall_S: public Sensor{
 public:
   Hall_S(int);

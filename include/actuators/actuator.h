@@ -11,7 +11,13 @@ public:
   virtual float inputMin() const = 0;
   virtual float inputMax() const = 0;
   virtual void command(float) = 0; //pass the comand to the actual actuator
+
+  virtual void safeHold();
+  virtual void safeStop();
+  virtual void initialize();
+
   virtual void printSerialUnit() const = 0;
+
 };
 
 #endif

@@ -2,8 +2,8 @@
 # **************************************************************
 # *                Simple C++ Makefile Template                *
 # *                                                            *
-# * Author: Arash Partow (2003)  												  		 *
-# * Modified by : Francesco Feltrin (2018) (Thanks dude!)      *
+# * Original Author: Arash Partow (2003)  	(Thanks dude!) 		 *
+# * Modified by : Francesco Feltrin (2018)      							 *
 # * URL: http://www.partow.net/programming/makefile/index.html *
 # *                                                            *
 # * Copyright notice:                                          *
@@ -15,7 +15,7 @@
 #
 
 CXX      := -c++
-#Add -pedantic if you wish
+#Add "-pedantic" if you wish
 CXXFLAGS := -errors -Wall -Wextra -Werror
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
 BUILD    := ./build
@@ -24,13 +24,13 @@ APP_DIR  := $(BUILD)/apps
 #This is just the name of the executable which is published
 TARGET   := testStat
 INCLUDE  := -Iinclude/
-#This is where to look for cpp and the MAIN, now in "test"
+#This is where to look for cpp and the MAIN,
+#  	 $(wildcard src/test/*.cpp)
 SRC      :=                      \
    $(wildcard src/actuators/*.cpp) \
-	 $(wildcard src/sensors/*.cpp) \
    $(wildcard src/statistic/*.cpp) \
-   $(wildcard src/*.cpp)         \
-	 $(wildcard src/test/*.cpp)    \
+	 $(wildcard src/sensors/*.cpp) \
+	 $(wildcard src/test/*.cpp)
 
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
