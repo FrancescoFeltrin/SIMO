@@ -22,14 +22,17 @@ BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 #This is just the name of the executable which is published
-TARGET   := testStat
+TARGET   := simoTest
 INCLUDE  := -Iinclude/
 #This is where to look for cpp and the MAIN,
 #  	 $(wildcard src/test/*.cpp)
+#	   $(wildcard src/*.cpp)
 SRC      :=                      \
    $(wildcard src/actuators/*.cpp) \
+	 $(wildcard src/interface/*.cpp) \
    $(wildcard src/statistic/*.cpp) \
 	 $(wildcard src/sensors/*.cpp) \
+	 $(wildcard src/simo/*.cpp) \
 	 $(wildcard src/test/*.cpp)
 
 

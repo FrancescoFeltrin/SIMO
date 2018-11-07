@@ -1,11 +1,13 @@
 #include "../../include/sensors/sensor.h"
-#include "../../include/statistic/statistic.h"
 #include "../../include/units/units.h"
+#include "../../include/minimalInterface/minInterface.h"
 
-AnalogS::AnalogS(int pin_n,char id): pin(pin_n),name(id){}
+AnalogS::AnalogS(int pin_n,string id): pin(pin_n),name(id){ }
 
 data AnalogS::readRaw() const{
-  return data(1023/2,2);        //Simple example
+  unsigned int errADC = 2;
+  data output(readAnalogPin(pin), errADC);
+  return output;
 }
 
 int AnalogS::minValue() const{ // The arduino has a 10 bits ADC
@@ -16,10 +18,10 @@ int AnalogS::maxValue() const{ // The arduino has a 10 bits ADC
   return 1023;
 }
 
-char AnalogS::id() const{
+string AnalogS::id() const{
   return name;
 }
 
-char AnalogS::unit() const{
-  return 'b';
+string AnalogS::unit() const{
+  return "bit";
 }

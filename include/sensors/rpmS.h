@@ -7,12 +7,13 @@
 // given by the hall sensor measurment.
 
 class RpmS : public HallS{
-  RpmS(int,char);
+public:
+  RpmS(int,string);
   virtual data readRaw() const;
   virtual data interpret(const data &) const;
   virtual int minValue() const;
   virtual int maxValue() const;
-  virtual char unit() const;
+  virtual string unit() const;
 };
 
 #endif

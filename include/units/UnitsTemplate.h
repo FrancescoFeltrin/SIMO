@@ -18,11 +18,13 @@ Implemenation details:
   In this way you should be able to to  a+b, a+5, 5+a ,a+5.0 as long as you have a
   constructor able to convert from TYPE of 5.0 to measure.
 To fix:
+  - IMPORTANT: what does relative error means when the value is zero?
   - I would like the friend implemenation to be separated.
   - Possibly in a cpp, but with templates It might not be possible
   - If not, at left outside of the class definition...
   - To fix the pow function to real exponent and negative values as base
   - Power function fails some tests
+
 To improve :
   - I could add a scale factor <k> in the template definition to store the "error"
   value in a different unit compared to the value. (One would expect the error to be
@@ -35,7 +37,12 @@ To improve :
 template <class V,class E>
 class Measure{
   private:
-    V relError()const { return ((V) error) / value;};
+    V relError()const {
+      if (value!=0)
+        return ((V) error) / value;
+      else
+        return 1023;
+    };
   public:
     V value;
     E error;
@@ -66,14 +73,24 @@ class Measure{
     }
     friend Measure operator*(const Measure & a, const Measure & b) {
       V res = a.value * b.value;
-      E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
-      E absError = fabs(res*relError); //need to force floating point abs!
+      E absError;
+      if ((a.value != 0) && (b.value!= 0 )){
+        E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
+        absError = fabs(res*relError); //need to force floating point abs!
+      }
+      else
+        absError = sqrt(pow(a.error*b.value,2)+pow(b.error*a.value,2));
       return Measure(res,absError);
     }
     friend Measure operator/(const Measure & a, const Measure & b) {
       V res = a.value / b.value;
-      E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
-      E absError = fabs(res*relError);//need to force floating point abs!
+      E absError;
+      if ((a.value != 0) && (b.value!= 0 )){
+        E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
+        absError = fabs(res*relError);
+      }
+      else
+        absError = sqrt(pow(a.error/b.value,2)+pow(b.relError()*res,2));
       return Measure(res,absError);
     }
     //Implicit Conversions are a no-no as they cause ambiguity in cases such (5+a)
@@ -131,18 +148,32 @@ Measure<V,E> operator+(const Measure<V,E> & a, const Measure<V,E> & b){
 //-------- Related functions
 template<class V, class E>
 Measure<V,E> pow( Measure<V,E> m ,int n){
-  V value    = pow(m.value,n);
-  E relError = abs(n)* (m.error / fabs( m.value) );
-  E absError = relError * fabs(value);
-  return Measure<V,E> (value,absError);
+  Measure<V,E> result;
+  if (m.value == 0){
+    result = 0;
+  }
+  else{
+    V value = pow(m.value,n);
+    float relError = abs(n)* fabs( ((float)m.error) / ((float) fabs(m.value)) );
+    E absError = relError * ((float) fabs(value) );
+    result = Measure<V,E>(value,absError);
+  }
+  return result;
 }
 
 template<class V, class E>
 Measure<V,E> pow( Measure<V,E> m ,double n){
-  V value    = pow( fabs(m.value) , n);
-  E relError = abs(n)* (m.error / fabs( m.value) );
-  E absError = relError * (value);
-  return Measure<V,E>(value,absError);
+  Measure<V,E> result;
+  if (m.value == 0){
+    result = 0;
+  }
+  else{
+    V value    = pow( fabs(m.value) , n);
+    E relError = abs(n)* (m.error / fabs( m.value) );
+    E absError = relError * (value);
+    result = Measure<V,E>(value,absError);
+  }
+  return result;
 }
 
 template<class V, class E>

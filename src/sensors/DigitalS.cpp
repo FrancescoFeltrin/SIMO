@@ -1,13 +1,15 @@
 #include "../../include/sensors/sensor.h"
 #include "../../include/statistic/statistic.h"
 #include "../../include/units/units.h"
+#include "../../include/minimalInterface/minInterface.h"
 
-DigitalS::DigitalS(int pin_n,char id): pin(pin_n),name(id){
-    //pinMode(pin,INPUT);
+DigitalS::DigitalS(int pin_n,string id): pin(pin_n),name(id){
+    setDigitalPinAsInput(pin);
 }
 
 data DigitalS::readRaw() const{
-  return data(1,0); //Simple example
+  data output(readDigitalPin(pin),0);
+  return output;
 }
 
 int DigitalS::minValue() const{ // The arduino has a 10 bits ADC
@@ -18,10 +20,11 @@ int DigitalS::maxValue() const{ // The arduino has a 10 bits ADC
   return 1;
 }
 
-char DigitalS::id() const{
-  return name;
-};
+string DigitalS::id() const{
+  string copyName = name;
+  return  copyName;
+}
 
-char DigitalS::unit() const{
-  return 'b'; //should be bits
-};
+string DigitalS::unit() const{
+  return "bit"; //should be bits
+}

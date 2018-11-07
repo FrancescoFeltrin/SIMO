@@ -6,7 +6,7 @@
    For simplicity, I will not do it now.
 */
 
-CurrentS::CurrentS(int pin_n,char id):AnalogS(pin_n,id){};
+CurrentS::CurrentS(int pin_n,string id):AnalogS(pin_n,id){}
 
 data CurrentS::interpret(const data & bitRead) const{
   int ACSoffset = 2500;
@@ -20,7 +20,7 @@ data CurrentS::interpret(const data & bitRead) const{
   mA = ((mV - ACSoffset) * mApermV);
   unsigned int quantizationError = round( ((double) bitRead.error )*convmVmA );
 
-  data output(mA,quantizationError);
+  data output(round(mA),quantizationError);
   return output;
 }
 
@@ -32,6 +32,6 @@ int CurrentS::maxValue() const{
   return +20000;
 }
 
-char CurrentS::unit() const{
-  return 'A'; //Should be mA
-};
+string CurrentS::unit() const{
+  return "mA"; //Should be mA
+}
