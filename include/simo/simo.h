@@ -7,89 +7,49 @@
   Since it relies on the previous step information, I want to provide protection to data.
   Therefore SIMO is derived from the SimoMemoManager class, which handles access to data.
 
-  SimoMemoManager:
-  -
-
+  Compared to its derived classes, SIMO is minimal. This means that it does not
+  have fancy features, to save memory.
 */
+
 #include "../sensors/sensor.h"
 #include "../actuators/actuator.h"
 #include "../units/units.h"
+#include "simoMemoManager.h"
 
 #include <vector>
 using namespace std;
 
-class SimoMemoManager {
-private:
-  Actuator& act;
-  vector<Sensor*> sensorV;
-  vector<data> measureA; //where the measureaments are stored
-  vector<data> measureB;
-  vector<data>* currentMeasurament;
-  vector<data>* prevMeasurament;
-
-  unsigned long int timeA; // in milliseconds
-  unsigned long int timeB;
-
-  unsigned long int* timeCurrent; // in milliseconds
-  unsigned long int* timePrev;
-
-
-  vector<data> state;
-  float lastInput;
-  float targetState;
-public:
-  SimoMemoManager(Actuator &, Sensor &);
-  void addSensor(Sensor &);
-  const Sensor& sensorN(unsigned int) const; //protected access to sensor #N
-  const vector<Sensor*> & attachedSensors() const;
-
-  const vector<data>& readMultipleSensors(int = 5); //reads all sensor assigned to SimoMemo
-  const vector<data>& readMultipleSensors(const vector<Sensor*> &, int = 5); //reads the sensor you provide and updates state
-  //!!! WARNGING!!!! no checks on vector of sensors... so it is risky, do not use
-
-  const vector<data>& currentMeasure() const; //Read only this references get updated when all sensors are read
-  const vector<data>& prevMeasure() const;
-
-  const unsigned long int & timestampCurrentMeasure() const; //Read only this references get updated when all sensors are read
-  const unsigned long int & timestampPrevMeasure() const;
-
-  void updateState(const vector<data>&); // saves the state vector onto memory
-  const vector<data>& currentState() const; //protected access to state
-
-  bool applyControlInput( float ); //has direct acess to the hardware and updates "lastInput"
-
-  void setTargetState(float);
-  const float& target() const;  //protected access to targetState
-};
-
-/*
 class Simo: public SimoMemoManager{
 public:
-  Simo(const Actuator &, const Sensor &);
-  virtual vector<data>& readSensors();        //High level command, that write uses readMultipleSensors
-  virtual void estimateState();               //process measurements and updates with best estimate of state
-  virtual vector<data> stateFromMeasurments(const vector<data> &) = 0;
-  virtual vector<data>& openLoopStateEstimate(); //using last input and last measurement
-  virtual float computeControlInput() = 0;
-  //apply control input comes from above
-  virtual void  functionalTest() = 0;
-  virtual void performanceTest() = 0;
-}
-*/
+  Simo(Actuator &, Sensor &);
+  virtual const vector<data>& getMeasuraments();  //High level command, that write uses readMultipleSensors
+  virtual void  estimateTrueState();            //implements FDIR and a bunch of stuff
+  virtual float computeControlInput() const;    //high level.
+  virtual float computeControlInput(const vector<data> & targetState) const = 0;
+  virtual vector<data> integrateStateEq(const vector<data>& state,const unsigned int & Dt_ms) const = 0;  //need to implement state equation
+  virtual vector<data> observeState(const vector<data> & state) const  = 0; //returns expected measurements
+  virtual vector<data> stateObserver() const = 0; //Do whatever you need to estimate the state from measuraments
+  virtual void checkForFailureSigns(const vector<data> & expectedMeasure) = 0;
+  //->apply control input comes from above
+  virtual bool functionalTest() = 0; //return true is all is well
+};
 
-/* This is for "in the lab characterization"
-class Simo2: public Simo {
+// This is for "in the lab characterization";
+// Assumes that there is a human that reads the Serial.
+class Simo_lab: public Simo {
 public:
-  Simo2();
-  virtual void  staticCharact() = 0;
-  virtual void dynamicCharact() = 0;
-}; */
+  Simo_lab(Actuator &, Sensor &);
+  virtual void printCSVheader()  const;
+  virtual void printAllMeasure() const;
+  //virtual void staticCharact()   = 0;
+  //virtual void dynamicCharact()  = 0;
+  //virtual void performanceTest() = 0;
+};
 
-/* This is for "continuous testing"
-class Simo3: public Simo {
+/* This is for "perpetual testing initiative"
+class SimoPTI: public Simo_lab {
 public:
   Simo3();
-  ?
 }; */
 
 

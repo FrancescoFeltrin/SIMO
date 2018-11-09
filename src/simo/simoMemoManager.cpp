@@ -1,4 +1,4 @@
-#include "../../include/simo/simo.h"
+#include "../../include/simo/simoMemoManager.h"
 #include "../../include/units/units.h"
 #include "../../include/sensors/sensor.h"
 #include "../../include/minimalInterface/minInterface.h"
@@ -23,7 +23,7 @@ SimoMemoManager::SimoMemoManager(Actuator & MainAct, Sensor & MainSensor):
   timePrev(& timeB),
   state({data(0,0)}),
   lastInput(0),
-  targetState(0) {}
+  targetState(vector<data>(1,data(0,0)) ) {}
 
 void SimoMemoManager::addSensor( Sensor & newSensor){
   sensorV.push_back( &newSensor);
@@ -69,7 +69,7 @@ const vector<data>&  SimoMemoManager::readMultipleSensors(const vector<Sensor*> 
   timeStamp = tStart + (tEnd-tStart)/2; // putting a timestamp in the middle of the measure
   (*timeCurrent) = timeStamp/1000; //ms
 
-  //needs to check where you are saving the data!
+  //MUST CHECK WHERE YOU ARE SAVING DATA!
 
   data mean_value, std_value, worst_case;
   for(int i_sensor=0; i_sensor < n_sensors ; ++i_sensor){
@@ -118,11 +118,15 @@ bool SimoMemoManager::applyControlInput( float controlInput ){
   return true;
 }
 
-void SimoMemoManager::setTargetState(float target){
+const float & SimoMemoManager::lastAppliedInput() const{
+  return lastInput;
+};
+
+void SimoMemoManager::setTargetState(const vector<data>& target){
   targetState = target;
 }
 
-const float&  SimoMemoManager::target() const{
+const vector<data>&  SimoMemoManager::target() const{
   //protected access to targetState
   return targetState;
 }

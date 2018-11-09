@@ -28,5 +28,10 @@ int readAnalogPin(int pin);
 void writeDigitalPin(bool value);
 void writeAnalogPin(int value);
 
-
+// Interface
+void print2terminal(const string &); // if available
+void print2terminal(const int &); // if available
+void print2log(const string&); //
+void print2log(const int&); //
+bool inputFromTerminal(const string & promt);
 #endif

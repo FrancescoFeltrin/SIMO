@@ -40,3 +40,44 @@ void writeAnalogPin(int pin, int value){
   //analogWrite(pin, value)
   cout<<"Set Analog pin "<<pin <<" to "<< value<<endl;
 }
+
+
+// Interface
+void print2terminal(const string & msg){
+  //   Serial.print(string);
+  cout<<msg;
+}
+
+void print2terminal(const int & value){
+  //   Serial.print(value);
+  cout<<value;
+}
+
+void print2log(const string& msg){
+  //   Serial.print("LOG:");
+  //   Serial.print(string);
+  cout<<"Log: "<< msg<<endl;
+}
+
+void print2log(const int& value){
+  //   Serial.print("LOG:");
+  //   Serial.print(value);
+  cout<<"Log: "<< value << endl;
+}
+
+bool inputFromTerminal(const string & promt){
+  print2terminal(promt);
+  string options = "(Y/N) \n";
+  print2terminal(options);
+  char Answ;
+ /*if(Serial.available() > 0){
+   Ans = Serial.read();
+   Serial.print(" I received: ");
+   Serial.println(Ans);
+ }*/
+  cin >> Answ;
+  if (Answ == 'Y') return true;
+  if (Answ == 'N') return false;
+  else print2terminal(" Input not recognized");
+  return false;
+}

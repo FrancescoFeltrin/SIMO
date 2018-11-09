@@ -2,9 +2,6 @@
 #include "../../include/sensors/rpmS.h"
 #include "../../include/minimalInterface/minInterface.h"
 
-#include <iostream>
-using namespace std;
-
 RpmS::RpmS(int pin_n,string id):HallS(pin_n,id){}
 
 data RpmS::readRaw() const{

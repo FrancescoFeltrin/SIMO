@@ -150,6 +150,7 @@ std::ostream& operator<<(std::ostream& os,const Measure<V,E>& m){
   else
     return os << m.value;
 }
+
 /*template <class V,class E>
 Measure<V,E> operator+(const Measure<V,E> & a, const Measure<V,E> & b){
   // For some reason it does not work...

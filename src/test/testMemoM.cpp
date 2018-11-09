@@ -14,13 +14,15 @@ Esc rw(8);
 SimoMemoManager simo(rw,CS1);
 
 TEST_CASE("Simo memory management-names", "[basics]"){
+  vector<data> empty(1,data(0,0));
+  vector<data> n2(1,data(2,0));
   REQUIRE( simo.sensorN(0).id() == "cs");
   REQUIRE( simo.sensorN(1).id() == "cs");
   simo.addSensor(CS2);
   REQUIRE( simo.sensorN(1).id() == "cs2");
-  REQUIRE( simo.target() == 0);
-  simo.setTargetState(2);
-  REQUIRE( simo.target() == 2.0);
+  REQUIRE( simo.target() == empty);
+  simo.setTargetState(n2);
+  REQUIRE( simo.target() == n2);
   vector<data> state0(2,data(1,0) );
   REQUIRE( simo.currentState()[0] == data(0,0));
   simo.updateState(state0);
