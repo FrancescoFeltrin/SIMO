@@ -47,11 +47,9 @@ data RpmS::readRaw() const{
 
 data RpmS::interpret(const data & deltaT) const{
   data RPM;
-  data deltaT_mus = deltaT;
+  data deltaT_mus = deltaT*4; // Conversion to microseconds... this might overflow the int...
   if (deltaT > 0){
-      cout<< "deltaT_mus: "<< deltaT_mus <<endl;
-      RPM = (60000000.0 / deltaT_mus )/4;
-      cout<< "error = "<<RPM.error<< endl;
+      RPM = 60000000.0 / deltaT_mus ;
     }
   else
       RPM = data(0,460/3);

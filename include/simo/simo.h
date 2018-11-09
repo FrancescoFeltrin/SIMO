@@ -24,9 +24,15 @@ private:
   vector<Sensor*> sensorV;
   vector<data> measureA; //where the measureaments are stored
   vector<data> measureB;
-
   vector<data>* currentMeasurament;
   vector<data>* prevMeasurament;
+
+  unsigned long int timeA; // in milliseconds
+  unsigned long int timeB;
+
+  unsigned long int* timeCurrent; // in milliseconds
+  unsigned long int* timePrev;
+
 
   vector<data> state;
   float lastInput;
@@ -34,11 +40,18 @@ private:
 public:
   SimoMemoManager(Actuator &, Sensor &);
   void addSensor(Sensor &);
-  const Sensor& sensorN(unsigned int); //protected access to sensor #N
+  const Sensor& sensorN(unsigned int) const; //protected access to sensor #N
+  const vector<Sensor*> & attachedSensors() const;
 
+  const vector<data>& readMultipleSensors(int = 5); //reads all sensor assigned to SimoMemo
   const vector<data>& readMultipleSensors(const vector<Sensor*> &, int = 5); //reads the sensor you provide and updates state
+  //!!! WARNGING!!!! no checks on vector of sensors... so it is risky, do not use
+
   const vector<data>& currentMeasure() const; //Read only this references get updated when all sensors are read
   const vector<data>& prevMeasure() const;
+
+  const unsigned long int & timestampCurrentMeasure() const; //Read only this references get updated when all sensors are read
+  const unsigned long int & timestampPrevMeasure() const;
 
   void updateState(const vector<data>&); // saves the state vector onto memory
   const vector<data>& currentState() const; //protected access to state

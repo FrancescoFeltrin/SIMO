@@ -8,12 +8,15 @@
 data aData(100,10);
 data bData(10,1);
 data cData(10,0);
+data dData(100,1);
 
 TEST_CASE("Units2: arithmetic division","[basics]"){
-  REQUIRE( aData / 2  == data(50,5) );
-  REQUIRE( aData / 10 == data(10,1) );
-  REQUIRE( aData / bData  == data(10,0) );
-  REQUIRE( cData / 10  == data(1,0) );
+  REQUIRE( (aData+1).isIdenticalTo(data(101,10)));
+  REQUIRE( (aData / 2).isIdenticalTo(data(50,5)));
+  REQUIRE( (aData / 10).isIdenticalTo(data(10,1)));
+  REQUIRE( (aData / bData).isIdenticalTo(data(10,1)));
+  REQUIRE( (cData / 10).isIdenticalTo(data(1,0)) );
+  REQUIRE( (dData / 2).isIdenticalTo(data(50,0)) );
 }
 
 TEST_CASE("Units2: arithmetic division2","[basics]"){

@@ -17,8 +17,12 @@ Implemenation details:
   with exact numbers) external overload of aritmetic is implemented with friend.
   In this way you should be able to to  a+b, a+5, 5+a ,a+5.0 as long as you have a
   constructor able to convert from TYPE of 5.0 to measure.
+  -In some cases, you might want to use <int> for speed and memory as the basic types
+  for a measure. In that case, error/value would almost alayw be rounded to zero. Hence
+  the arithmetic for error propagation is based on foats, which are bigger and slower, but
+  deteriorate more slowly.
 To fix:
-  - IMPORTANT: what does relative error means when the value is zero?
+  - IMPORTANT: I think I have fixed bugs on relative errors.
   - I would like the friend implemenation to be separated.
   - Possibly in a cpp, but with templates It might not be possible
   - If not, at left outside of the class definition...
@@ -32,17 +36,13 @@ To improve :
   loosing too much accuracy.
 */
 
-
+//#include<iostream> // only for debugging pourposes
+//using namespace std;
 
 template <class V,class E>
 class Measure{
   private:
-    V relError()const {
-      if (value!=0)
-        return ((V) error) / value;
-      else
-        return 1023;
-    };
+    float relError()const;
   public:
     V value;
     E error;
@@ -61,23 +61,21 @@ class Measure{
     };
     //unary Overload
     Measure operator-() const;
-
+    bool isIdenticalTo(const Measure & ) const;
     //Overload of arithmetic with similar measures
     friend Measure operator+(const Measure & a, const Measure & b) {
-        E nError = sqrt( pow(a.error,2) + pow(b.error,2) );
+        E nError = sqrt( pow(a.error ,2) + pow( b.error,2));
         return Measure(a.value+b.value,nError);
     }
     friend Measure operator-(const Measure & a, const Measure & b) {
-        E nError = sqrt( pow(a.error,2) + pow(b.error,2) );
+        E nError = sqrt( pow( a.error ,2) + pow(b.error,2));
         return Measure(a.value-b.value,nError);
     }
     friend Measure operator*(const Measure & a, const Measure & b) {
       V res = a.value * b.value;
       E absError;
-      if ((a.value != 0) && (b.value!= 0 )){
-        E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
-        absError = fabs(res*relError); //need to force floating point abs!
-      }
+      if ((a.value != 0) && (b.value!= 0 ))
+        absError = fabs(res)*sqrt(pow(a.relError(),2)+pow(b.relError(),2));
       else
         absError = sqrt(pow(a.error*b.value,2)+pow(b.error*a.value,2));
       return Measure(res,absError);
@@ -85,19 +83,15 @@ class Measure{
     friend Measure operator/(const Measure & a, const Measure & b) {
       V res = a.value / b.value;
       E absError;
-      if ((a.value != 0) && (b.value!= 0 )){
-        E relError = sqrt(pow(a.relError(),2)+pow(b.relError(),2));
-        absError = fabs(res*relError);
-      }
+      if ((a.value != 0) && (b.value!= 0 ))
+        absError = fabs(res)*sqrt(pow(a.relError(),2)+pow(b.relError(),2));
       else
         absError = sqrt(pow(a.error/b.value,2)+pow(b.relError()*res,2));
       return Measure(res,absError);
     }
     //Implicit Conversions are a no-no as they cause ambiguity in cases such (5+a)
-
-    //Comparisons operators
+    //Comparison Operators
     bool lessThanAtSigma(const Measure& target,float Sigma=3.0) const;
-
     friend bool operator<(const Measure &a, const Measure &b){//This way conversion is enforced
       return a.lessThanAtSigma(b);
      };
@@ -119,8 +113,24 @@ class Measure{
 };
 
 template <class V,class E>
+float Measure<V,E>::relError()const{
+  if (value!=0)
+    return  ((float) error) / ((float) value);
+  else
+    return 999999999.0; //are we close to infinity yet?
+}
+
+template <class V,class E>
 Measure<V,E> Measure<V,E>::operator-() const{
   return Measure<V,E>(-value,error);
+}
+
+template <class V,class E>
+bool Measure<V,E>::isIdenticalTo(const Measure<V,E> & target) const{
+  if ((this->value == target.value) && (this->error == target.error))
+    return true;
+  else
+    return false;
 }
 
 template <class V,class E>
