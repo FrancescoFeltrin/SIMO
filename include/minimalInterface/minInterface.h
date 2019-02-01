@@ -1,7 +1,8 @@
 #ifndef MININTERFACE_H
 #define MININTERFACE_H
-#include<iostream>
-//#include <Arduino.h>
+
+#define CPU_ARCH  //Choose the architecture you would like. ONLY HERE
+//#define ARDUINO_ARCH
 
 // This is an attempt at portability;
 // Ideally you would just update this file to deploy on a different hardware.
@@ -15,8 +16,16 @@
   -Inputs from screen
   -Warning output
 */
-using byte = unsigned char; // comment this for arduino.
-using string = std::string;      //arduino does not implement string as strandard c++
+
+#ifdef CPU_ARCH
+  #include<iostream>
+  using byte = unsigned char; // comment this for arduino.
+  using string = std::string;      //arduino does not implement string as strandard c++
+#endif
+
+#ifdef ARDUINO_ARCH
+  #include <Arduino.h>
+#endif
 
 unsigned long int timeMicro();
 void setDigitalPinAsInput(int pin);
