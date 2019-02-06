@@ -16,7 +16,7 @@
 
 CXX      := -c++
 #Add "-pedantic" if you wish
-CXXFLAGS := -errors -Wall -Wextra -Werror
+CXXFLAGS := -errors -Wall -Wextra -Werror 
 LDFLAGS  := -L/usr/lib -lstdc++ -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
@@ -30,11 +30,9 @@ INCLUDE  := -Iinclude/
 SRC      :=                      \
    $(wildcard src/actuators/*.cpp) \
 	 $(wildcard src/interface/*.cpp) \
-   $(wildcard src/statistic/*.cpp) \
-	 $(wildcard src/sensors/*.cpp) \
+   $(wildcard src/sensors/*.cpp) \
 	 $(wildcard src/simo/*.cpp) \
 	 $(wildcard src/test/*.cpp)
-
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 

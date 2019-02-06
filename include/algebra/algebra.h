@@ -38,11 +38,11 @@ template<unsigned int nR,unsigned int nC =1, class T =float>
 class Gmatrix{
 private:
   BLA::Matrix<(int)nR,(int)nC, BLA::Array<nR,nC,T> > mat; //protected to avoid bypassing the interface
-  Gmatrix(BLA::Matrix<nC,nR,BLA::Array<nR,nC,T> > m):mat(m){};
+  Gmatrix(BLA::Matrix<nR, nC, BLA::Array<nR,nC,T> > m):mat(m){};
 public:
   Gmatrix(){};
-
   Gmatrix(const Gmatrix& toCopy):mat(toCopy.mat){};
+
   unsigned int nRow()const {
     return (unsigned int) mat.GetRowCount();
   }
@@ -75,9 +75,9 @@ public:
     return Gmatrix(mat-b.mat);
   }
 
-  Gmatrix operator*(const Gmatrix &b){
-      return Gmatrix(mat*b.mat);
-  }
+  //Gmatrix operator*(const Gmatrix &b){
+  //    return Gmatrix(mat*b.mat);
+  //}
 
   Gmatrix operator*(const T& scalar){
     return Gmatrix(mat*scalar);
@@ -100,7 +100,7 @@ public:
     return output;
   }
 
-  Gmatrix & operator=(const Gmatrix& b){  //assignment operator
+  Gmatrix& operator=(const Gmatrix& b){  //assignment operator
     mat = b.mat;
     return *this;
   }

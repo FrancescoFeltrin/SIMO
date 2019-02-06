@@ -15,6 +15,7 @@ To do:
 #include "../units/units.h"
 #include "../algebra/algebra.h"
 #include "../cyclicMemory/cyclicMemory.h"
+#include "../../include/statistic/statistic.h"
 
 #include <iostream>
 using namespace std;
@@ -22,18 +23,16 @@ using namespace std;
 template<int nSensors,
          int stateSize,
          int nStateTimeRec   = 2,
-         int nMeasureTimeRec = 2>class SimoN {
+         int nMeasureTimeRec = 2> class SimoN {
 private:
   //Stuff to make it easier to read
+  Actuator& act;
+  Sensor* sensorV[nSensors];
+public:
   using stateType = Gmatrix<stateSize,1,dataL>;
   using measureType = Gmatrix<nSensors,1,dataL>;
   using controlInputType = float;
   using timeType = int;
-
-  Actuator& act;
-  Sensor* sensorV[nSensors];
-
-public:
   //Public data
   Record <stateType  , nStateTimeRec   > state;
   Record <measureType, nMeasureTimeRec > measure;
@@ -42,21 +41,23 @@ public:
   controlInputType nextControl;
   stateType targetState;
 
-  SimoN(){};
+  //SimoN(){};
   SimoN(Actuator& a, Sensor* vec [nSensors] );
 
-  //control functions (HIGH LEVEL).
+  //  control functions (HIGH LEVEL).
   virtual void getNewMeasure();
-  //virtual void estimateState() =0;
+  virtual void estimateState() =0;
   virtual void computeControlInput();
   void applyControlInput(); //applies it and records the event
 
-  //Lower level functions
+  //  Lower level functions
   measureType readAllSensors(int nTimes= 3);
-  //virtual stateType integrateStateEq(stateType s0,controlInputType u0,timeType deltaT) const =0;
-  //virtual measureType observationModel(stateType s) const =0;
-  //virtual controlInputType controlLaw(stateType state ,stateType target) const=0;
+  virtual stateType integrateStateEq(stateType s0,controlInputType u0,timeType deltaT) const =0;
+  virtual measureType observationModel(stateType s) const =0;
+  virtual controlInputType controlLaw(stateType state ,stateType target) const=0;
 };
+
+// Implementations
 
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sensor* vec [nSensors] ): act(a){ //WTF! ,sensorV(vec){}; does not work
@@ -68,15 +69,20 @@ SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sens
 //------------ Implementation of HIGH LEVEL methods
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::getNewMeasure(){
-  Gmatrix<nSensors,1,dataL> newUpdate = readAllSensors();
-  //if you want to check the inputs, do so now!
-  measure.push(newUpdate); //commit to what you have measured
+  using measureType = Gmatrix<nSensors,1,dataL>;
+  measureType newUpdate = readAllSensors();
+  //Example of Fault Detection in the sensor read
+  /*measureType propagatedMeasure = observationModel(integrateStateEq(state(0),controlInput(0),0.1));
+  if (newUpdate == propagatedMeasure){ //this check is performed at 3 sigma for each value
+    measure.push(newUpdate); //commit to what you have measured
+  }*/
+  measure.push(newUpdate);
   cout<<"get New Measure done"<<endl;
 }
 
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::computeControlInput(){
-    //nextControl = controlLaw(state[0],targetState);
+    nextControl = controlLaw(state[0],targetState);
     cout<<" High level control input"<<endl;
 }
 
@@ -89,10 +95,39 @@ void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::applyControlInp
 
 //------------ Implementation of LOW LEVEL methods
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
-Gmatrix<nSensors,1,dataL> SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::readAllSensors(int n){
-  cout<<" read all sensors, n= "<< n<<endl;
-  return measure[0];
-};
+Gmatrix<nSensors,1,dataL> SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::readAllSensors(int n_readout){
+  using measureType = Gmatrix<nSensors,1,dataL>;
+  //Reads multiple sensors, one after the other,cycling n_readout times.
+  //This way the "mean measurament" time is similar even with multiple read.
+
+  data matrixRes[nSensors][n_readout];
+  measureType recordedMeasures;
+  unsigned long int tStart,tEnd,timeStamp0;
+
+  tStart = timeMicro();
+  for(int n_read = 0; n_read < n_readout; ++n_read){ //for n_readout times
+    for (int i_sensor = 0; i_sensor< nSensors; ++i_sensor){  //Read all the sensors sensors
+      matrixRes[i_sensor][n_read] = sensorV[i_sensor]->readRaw();
+    }
+  }
+  tEnd = timeMicro();
+  timeStamp0 = tStart + (tEnd-tStart)/2; // putting a timestamp in the middle of the measure
+  //(*timeCurrent) = timeStamp/1000; //ms
+
+  data mean_value, std_value, worst_case;
+  dataL worstCaseF;
+  for(int i_sensor=0; i_sensor < nSensors ; ++i_sensor){
+      mean_value = mean( matrixRes[i_sensor],n_readout);
+      std_value  = standardDev( matrixRes[i_sensor],n_readout, mean_value);
+      worst_case = data(mean_value.value, std_value.value+mean_value.error);
+      worst_case =  sensorV[i_sensor]->interpret(worst_case);
+      worstCaseF = dataL((float) worst_case.value, (float) worst_case.error);
+      recordedMeasures(i_sensor) = worstCaseF;
+  }
+
+  cout<<" read all sensors, n= "<< n_readout <<" timeStamp "<<timeStamp0 <<endl;
+  return recordedMeasures;
+}
 
 
 #endif

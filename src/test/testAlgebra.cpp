@@ -109,6 +109,9 @@ TEST_CASE("Algebra: operation between vectors and matrices ","[basics]"){
   REQUIRE( (M*c.t())(0) == 1);
   REQUIRE( (M*c.t())(1) == 2);
   REQUIRE( (M*c.t())(2) == 3);
+
+  Gmatrix<1,3,float> C;
+  C= c+c;
 }
 
 TEST_CASE("Algebra: tranposition ","[basics]"){

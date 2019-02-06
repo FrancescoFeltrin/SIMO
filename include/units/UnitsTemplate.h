@@ -61,17 +61,22 @@ class Measure{
     };
     //unary Overload
     Measure operator-() const;
+    Measure& operator+=(const Measure &);
+    Measure& operator-=(const Measure &);
+    Measure& operator*=(const Measure &);
+    Measure& operator/=(const Measure &);
+
     bool isIdenticalTo(const Measure & ) const;
     //Overload of arithmetic with similar measures
-    friend Measure operator+(const Measure & a, const Measure & b) {
+    friend Measure operator+(const Measure & a, const Measure & b){
         E nError = sqrt( pow(a.error ,2) + pow( b.error,2));
         return Measure(a.value+b.value,nError);
     }
-    friend Measure operator-(const Measure & a, const Measure & b) {
+    friend Measure operator-(const Measure & a, const Measure & b){
         E nError = sqrt( pow( a.error ,2) + pow(b.error,2));
         return Measure(a.value-b.value,nError);
     }
-    friend Measure operator*(const Measure & a, const Measure & b) {
+    friend Measure operator*(const Measure & a, const Measure & b){
       V res = a.value * b.value;
       E absError;
       if ((a.value != 0) && (b.value!= 0 ))
@@ -80,7 +85,7 @@ class Measure{
         absError = sqrt(pow(a.error*b.value,2)+pow(b.error*a.value,2));
       return Measure(res,absError);
     }
-    friend Measure operator/(const Measure & a, const Measure & b) {
+    friend Measure operator/(const Measure & a, const Measure & b){
       V res = a.value / b.value;
       E absError;
       if ((a.value != 0) && (b.value!= 0 ))
@@ -124,6 +129,32 @@ template <class V,class E>
 Measure<V,E> Measure<V,E>::operator-() const{
   return Measure<V,E>(-value,error);
 }
+
+template <class V,class E>
+Measure<V,E>& Measure<V,E>::operator+=(const Measure & target){
+    *this = *this + target;
+    return *this;
+}
+
+template <class V,class E>
+Measure<V,E>& Measure<V,E>::operator-=(const Measure & target){
+    *this = *this - target;
+    return *this;
+}
+
+template <class V,class E>
+Measure<V,E>& Measure<V,E>::operator*=(const Measure & target){
+    *this = (*this) * target;
+    return *this;
+}
+
+template <class V,class E>
+Measure<V,E>& Measure<V,E>::operator/=(const Measure & target){
+  *this = *this / target;
+   return *this;
+}
+
+
 
 template <class V,class E>
 bool Measure<V,E>::isIdenticalTo(const Measure<V,E> & target) const{
@@ -190,6 +221,11 @@ Measure<V,E> pow( Measure<V,E> m ,double n){
 template<class V, class E>
 Measure<V,E> sqrt( Measure<V,E> m){
   return pow(m,0.5);
+}
+
+template<class V, class E>
+Measure<V,E> fabs( Measure<V,E> m){
+  return fabs(m.value);
 }
 
 #endif
