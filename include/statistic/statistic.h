@@ -6,7 +6,12 @@
 #ifndef STATISTIC_H
 #define STATISTIC_H
 
-#include <cmath>
+#ifdef CPU_ARCH
+  #include <cmath>
+#endif
+#ifdef ARDUINO_ARCH
+  #include <math.h>
+#endif
 
 template<class T>
 T mean(const T array [],unsigned int aSize){
@@ -42,6 +47,7 @@ T standardDev(const T array [],unsigned int aSize){
 }
 
 //=========== With STD vectors ============================
+#ifdef CPU_ARCH
 #include <vector>
 //#include <ArduinoSTL.h> //Arduino version of STL // For the arduino
 using namespace std;
@@ -79,11 +85,11 @@ T standardDev(const vector<T> & vector){
   return standardDev(vector,avg);
 }
 
-/*
-vector<int> filterOutliers(vector<int>* inputV);
-vector<int> filterOutliers(vector<int>* inputV, float meanValue, float std);*/
+
+//vector<int> filterOutliers(vector<int>* inputV);
+//vector<int> filterOutliers(vector<int>* inputV, float meanValue, float std);
 
 
 //maybe also linear and quadratic regression?
-
+#endif /* CPU_ARCH */ 
 #endif

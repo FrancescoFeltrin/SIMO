@@ -14,6 +14,11 @@
         -Container friendly features such as empty() and size();
 
 */
+#include "../minimalInterface/minInterface.h"
+
+#ifdef CPU_ARCH
+  using namespace std; //used in the std::min() function, compared to the arduino one.
+#endif
 
 template<class T,int n=2>
 class RStack{
@@ -43,7 +48,7 @@ void RStack<T,n>::push(const T& toInsert ){
 template<class T,int n>
 const T& RStack<T,n>::read(int idx) const{
   if (idx > 0) idx = 0;
-  int maxHistory = -std::min((int)sizeInt,n)+1;
+  int maxHistory = -min((int)sizeInt,n)+1;
   if (idx < maxHistory) idx = maxHistory;
   idx = (start+idx+n) % n;
   return buffer[idx];

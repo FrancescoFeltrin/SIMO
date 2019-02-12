@@ -4,9 +4,8 @@
 */
 
 #ifdef ARDUINO_ARCH
-#include <Arduino.h>
 unsigned long int timeMicro(){
-  return micros(); for arduino
+  return micros();// for arduino
 }
 
 void setDigitalPinAsInput(int pin){
@@ -30,13 +29,12 @@ void writeDigitalPin(int pin, bool value){
 }
 
 void writeAnalogPin(int pin, int value){
-  analogWrite(pin, value)
+  analogWrite(pin, value);
 }
-
 
 // Interface
 void print2terminal(const string & msg){
-   Serial.print(string);
+   Serial.print(msg);
 }
 
 void print2terminal(const int & value){
@@ -45,7 +43,7 @@ void print2terminal(const int & value){
 
 void print2log(const string& msg){
      Serial.print("LOG:");
-     Serial.print(string);
+     Serial.print(msg);
 }
 
 void print2log(const int& value){
@@ -61,7 +59,7 @@ bool inputFromTerminal(const string & promt){
   if(Serial.available() > 0){
     Answ = Serial.read();
     Serial.print(" I received: ");
-    Serial.println(Ans);
+    Serial.println(Answ);
   }
   if (Answ == 'Y') return true;
   if (Answ == 'N') return false;

@@ -1,8 +1,17 @@
 //Test Template for the unit class
 #ifndef UNITSTEMPLATE_H
 #define UNITSTEMPLATE_H
-#include <cmath>
-#include <iostream>
+#include "../minimalInterface/minInterface.h"
+
+#ifdef CPU_ARCH
+  #include <cmath>
+  #include <iostream>
+#endif
+
+#ifdef ARDUINO_ARCH
+  #include <cmath.h>
+#endif
+
 
 /*It ROUGHLY handles error propagation, with no dimensional check (yet):
   -Assumes the errors are UNCORRELATED GAUSSIAN prob distribution,
@@ -174,14 +183,15 @@ bool Measure<V,E>::lessThanAtSigma(const Measure& target, float Sigma) const{
 }
 
 //--------- External Overloading, which don't care about order
-template<class V,class E>
-std::ostream& operator<<(std::ostream& os,const Measure<V,E>& m){
-  if ( m.error > 0)
-    return os << m.value << " +- "<< m.error;
-  else
-    return os << m.value;
-}
-
+#ifdef CPU_ARCH
+  template<class V,class E>
+  std::ostream& operator<<(std::ostream& os,const Measure<V,E>& m){
+    if ( m.error > 0)
+      return os << m.value << " +- "<< m.error;
+    else
+      return os << m.value;
+  }
+#endif /*CUP_ARCH */
 /*template <class V,class E>
 Measure<V,E> operator+(const Measure<V,E> & a, const Measure<V,E> & b){
   // For some reason it does not work...

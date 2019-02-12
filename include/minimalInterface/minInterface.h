@@ -25,6 +25,7 @@
 
 #ifdef ARDUINO_ARCH
   #include <Arduino.h>
+  using string = String;
 #endif
 
 unsigned long int timeMicro();

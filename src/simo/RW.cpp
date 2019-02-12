@@ -1,7 +1,7 @@
 #include "../../include/simo/RW.h"
 #include "../../include/sensors/rpmS.h"
 #include "../../include/sensors/currentS.h"
-#include <math.h>
+//#include <math.h>
 /*NB: from the RW.h file
 using stateType = Gmatrix<3,1,dataL>;   //State vector size = 3-> angular speed, angular acc, current (mAmp) drawn
 using measureType = Gmatrix<2,1,dataL>; //Number of sensors = 2-> Rpm sensor + Amp sensor.
@@ -9,6 +9,7 @@ using controlInputType = float;
 using timeType = int;
 */
 
+RW::RW(){};
 
 RW::RW(Actuator& a, Sensor* vec [2] ):SimoN<2,3,3,3>(a,vec){
   Sensor* S1 = vec[0];
@@ -17,11 +18,11 @@ RW::RW(Actuator& a, Sensor* vec [2] ):SimoN<2,3,3,3>(a,vec){
   if (dynamic_cast < RpmS* >(S1) ){
     if (dynamic_cast < CurrentS* >(S2) ){
         //SimoN(a,vec);
-        print2terminal("RW constructor to good end ");
+        //print2terminal("RW constructor to good end ");
     }
   }
   else{
-    print2terminal("Warning! Sensor list does not match expectations!->[rpm,current] ");
+    //print2terminal("Warning! Sensor list does not match expectations!->[rpm,current] ");
   }
 };
 

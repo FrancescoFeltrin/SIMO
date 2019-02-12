@@ -12,8 +12,9 @@ using timeType = int;
 
 class RW: public SimoN<2,3,3,3>{
 public:
-  //SimoEx();
+  RW();
   RW(Actuator& a, Sensor* vec [2]);// Sensors need to be RPM and Current
+  RW(const RW &) =  default;
   //  control functions (HIGH LEVEL).
   // getNewMeasure(); inherited
   virtual void estimateState();

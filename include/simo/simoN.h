@@ -26,7 +26,7 @@ template<int nSensors,
          int nMeasureTimeRec = 2> class SimoN {
 private:
   //Stuff to make it easier to read
-  Actuator& act;
+  Actuator* act;
   Sensor* sensorV[nSensors];
 public:
   using stateType = Gmatrix<stateSize,1,dataL>;
@@ -41,8 +41,10 @@ public:
   controlInputType nextControl;
   stateType targetState;
 
-  //SimoN(){};
+  SimoN(){};
   SimoN(Actuator& a, Sensor* vec [nSensors] );
+  SimoN(const SimoN &) = default;
+  SimoN& operator=(const SimoN&) = default;
 
   //  control functions (HIGH LEVEL).
   virtual void getNewMeasure();
@@ -59,7 +61,7 @@ public:
 
 //===========================0 Implementations 0================================
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
-SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sensor* vec [nSensors] ): act(a){ //WTF! ,sensorV(vec){}; does not work
+SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sensor* vec [nSensors] ): act(&a){
   for (int i=0; i<nSensors; ++i)
     sensorV[i] = vec[i];
   cout<<"SimoN constructor"<<endl;
@@ -87,7 +89,7 @@ void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::computeControlI
 
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::applyControlInput(){
-  act.command(nextControl);
+  act->command(nextControl);
   controlInput.push(nextControl);
   cout<<" contol input applied"<<endl;
 }

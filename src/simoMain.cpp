@@ -10,7 +10,7 @@ string testFun(string input){
 };
 
 int main(){
-  cout<<"SIMO main, which is not doing anything at the momment. "<< endl;
+  cout<<"SIMO main, which is not doing anything at the moment. "<< endl;
   string test= "string 1";
   string& b = test;
   cout << test<<endl;
