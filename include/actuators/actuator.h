@@ -10,6 +10,7 @@
 class Actuator{
 public:
   Actuator();
+  virtual void initialize() = 0;
   virtual void command(float) = 0;
 
   virtual float inputMin() const = 0;
@@ -17,7 +18,7 @@ public:
 
   virtual void safeHold() = 0;
   virtual void safeStop() = 0;
-  virtual void initialize() = 0;
+
 
   virtual char commandUnit() const = 0;
 };

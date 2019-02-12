@@ -1,5 +1,8 @@
 #include "../../include/minimalInterface/minInterface.h"
-//Depending on where you are deploying, it chooses the hopefully correct implementation
+/*Depending on where you are deploying, it chooses the hopefully correct implementation
+  It is nothing but a bunch of wrapper
+*/
+
 #ifdef ARDUINO_ARCH
 #include <Arduino.h>
 unsigned long int timeMicro(){
@@ -65,7 +68,7 @@ bool inputFromTerminal(const string & promt){
   else print2terminal(" Input not recognized");
   return false;
 }
-#endif
+#endif /* ARDUINO_ARCH */
 /////// CPU
 #ifdef CPU_ARCH
 #include <iostream>
@@ -132,4 +135,4 @@ bool inputFromTerminal(const string & promt){
   else print2terminal(" Input not recognized");
   return false;
 }
-#endif
+#endif /* CPU_ARCH */

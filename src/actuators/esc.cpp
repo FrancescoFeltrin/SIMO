@@ -23,10 +23,12 @@ void Esc::command(float input){
 
 void Esc::calibrate(){
   //set the max and min speed
-  /*int value = 0;
+  /*
+  int value = 0;
   bool exit1 = false;
   bool exit2 = false;
-  Serial.println( "Setting top Speed (press 1 when you hear long beep-beep)");
+  print2terminal("Setting top Speed (press 1 when you hear long beep-beep)");
+  //Serial.println( "Setting top Speed (press 1 when you hear long beep-beep)");
   high();
   while (exit1 == false){
     if(Serial.available()>0){
@@ -34,7 +36,8 @@ void Esc::calibrate(){
       if (value==1){
         exit1 = true;
         value = 0;
-        Serial.println( "Top speed set, Setting LOW Speed (press 1 after a lot of long beeps)" );
+        print2terminal("Top speed set, Setting LOW Speed (press 1 after a lot of long beeps)");
+        //Serial.println( "Top speed set, Setting LOW Speed (press 1 after a lot of long beeps)" );
         low();
         while (exit2 == false){
           if(Serial.available()>0){
@@ -45,7 +48,8 @@ void Esc::calibrate(){
         }
       }
     }
-  Serial.println("Initialization is Done! ");*/
+  print2terminal("Initialization is Done! ");
+  //println("Initialization is Done! ");*/
 }
 
 void Esc::initialize(){
@@ -55,7 +59,8 @@ void Esc::initialize(){
   bool exit = false;
   srv_ptr->attach(pin);
   low();
-  Serial.println("Initialize ESC(ONLY the first time)?  1 = YES / 2 = NO");
+  print2terminal("Initialize ESC(ONLY the first time)?  1 = YES / 2 = NO");
+  //Serial.println("Initialize ESC(ONLY the first time)?  1 = YES / 2 = NO");
   while (exit == false){
     if(Serial.available()>0){
       value = Serial.parseInt();
@@ -69,7 +74,8 @@ void Esc::initialize(){
    countTo1000++;
    if (countTo1000>1000) exit = true;
   }
-  Serial.print("Initialization over.");
+  print2terminal("Initialization over.");
+  //Serial.print("Initialization over.");
   low();*/
 }
 

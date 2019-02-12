@@ -1,13 +1,13 @@
-//Test for the record memory
+//Test for the RStack memory
 
 //#define CATCH_CONFIG_MAIN //only in one cpp
 
 #include "../../include/catch.hpp"
-#include "../../include/cyclicMemory/cyclicMemory.h"
+#include "../../include/rStack/rStack.h"
 #include <iostream>
 
 //Set up for the whole test suite
-Record<int,3> intMemo,emptyM;
+RStack<int,3> intMemo,emptyM;
 
 TEST_CASE("Cyclic Memory push","[basics]"){
   intMemo.push(1);

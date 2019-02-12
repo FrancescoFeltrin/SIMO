@@ -51,10 +51,10 @@ TEST_CASE("Algebra & Data: matrix assignment and copy","[basics]"){
 
   M2 = M1;
   //using C array syntax
-  REQUIRE( M2(0,0)== 10);
-  REQUIRE( M2(1,1)== 10);
-  REQUIRE( M2(2,2)== 10);
-  REQUIRE( M2(0,1)== 0);
+  REQUIRE(cast(M2[0][0])== 10);
+  REQUIRE(cast(M2[1][1])== 10);
+  REQUIRE(cast(M2[2][2])== 10);
+  REQUIRE(cast(M2[0][1])== 0);
 
   Gmatrix<3,3,data> Mcc(M1); //copy constructor
   REQUIRE( Mcc(0,0)== 9);

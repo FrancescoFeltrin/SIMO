@@ -10,10 +10,9 @@
   - "data" is a class that stores both a value and the error. It automatically perfor
     basic error propagation (it adds errors in the "right way")
   - "readRaw" provides the fastest, minimal overhead to read the hardware. It does
-    no interpretation of the data. In this way, you can sample multiple sensor in
-    rapid succession and pretend you have simultaneous readings.
+    no interpretation of the data.
   - "interpret" produces a data that is in the unit identified by "unit()"
-  - "Data" is a simple readRaw+ average+ interpret.
+  - "read" is a simple readRaw + average + interpret.
 */
 
 class Sensor{

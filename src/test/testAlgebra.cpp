@@ -45,10 +45,10 @@ TEST_CASE("Algebra: matrix assignment and copy","[basics]"){
 
   M2 = M1;
   //using c array syntax
-  REQUIRE( M2(0,0)== 1);
-  REQUIRE( M2(1,1)== 1);
-  REQUIRE( M2(2,2)== 1);
-  REQUIRE( M2(0,1)== 0);
+  REQUIRE( cast(M2[0][0])== 1);
+  REQUIRE( cast(M2[1][1])== 1);
+  REQUIRE( cast(M2[2][2])== 1);
+  REQUIRE( cast(M2[0][1])== 0);
 
   Gmatrix<3,3,float> Mcc(M1); //copy constructor
   REQUIRE( Mcc(0,0)== 1);

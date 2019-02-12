@@ -14,7 +14,7 @@ To do:
 #include "../actuators/actuator.h"
 #include "../units/units.h"
 #include "../algebra/algebra.h"
-#include "../cyclicMemory/cyclicMemory.h"
+#include "../rStack/rStack.h"
 #include "../../include/statistic/statistic.h"
 
 #include <iostream>
@@ -34,10 +34,10 @@ public:
   using controlInputType = float;
   using timeType = int;
   //Public data
-  Record <stateType  , nStateTimeRec   > state;
-  Record <measureType, nMeasureTimeRec > measure;
-  Record <timeType   , nMeasureTimeRec > timeStamp;
-  Record <float      , nMeasureTimeRec > controlInput;
+  RStack <stateType  , nStateTimeRec   > state;
+  RStack <measureType, nMeasureTimeRec > measure;
+  RStack <timeType   , nMeasureTimeRec > timeStamp; //in milliseconds, when the sensor are read
+  RStack <float      , nMeasureTimeRec > controlInput;
   controlInputType nextControl;
   stateType targetState;
 
@@ -57,8 +57,7 @@ public:
   virtual controlInputType controlLaw(stateType state ,stateType target) const=0;
 };
 
-// Implementations
-
+//===========================0 Implementations 0================================
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sensor* vec [nSensors] ): act(a){ //WTF! ,sensorV(vec){}; does not work
   for (int i=0; i<nSensors; ++i)
@@ -112,7 +111,7 @@ Gmatrix<nSensors,1,dataL> SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTime
   }
   tEnd = timeMicro();
   timeStamp0 = tStart + (tEnd-tStart)/2; // putting a timestamp in the middle of the measure
-  //(*timeCurrent) = timeStamp/1000; //ms
+  timeStamp.push((timeType) timeStamp0/1000); //save the time of measurament in ms
 
   data mean_value, std_value, worst_case;
   dataL worstCaseF;

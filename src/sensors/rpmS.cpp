@@ -4,6 +4,7 @@
 
 RpmS::RpmS(int pin_n,string id):HallS(pin_n,id){}
 
+#ifdef ARDUINO_ARCH
 data RpmS::readRaw() const{
   //NB: The output is in microseconds/4 because the resolution of the function
   // "micros()" is 4 microseconds. Minimum RPM = 45 ?
@@ -41,6 +42,15 @@ data RpmS::readRaw() const{
                                    //err = sqrt(4^2+4^2)/4->1.41;
   return DeltaT_ms;
 }
+
+#endif /*ARDUINO_ARCH */
+#ifdef CPU_ARCH
+data RpmS::readRaw() const{
+  //NB: proto stuff
+  return 10;
+}
+#endif /*CPU_ARCH*/
+
 
 data RpmS::interpret(const data & deltaT) const{
   data RPM;
