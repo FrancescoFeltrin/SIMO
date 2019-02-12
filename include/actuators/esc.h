@@ -12,6 +12,8 @@ private:
   void setSpeed(float);
   static const int low_lv  = 1000;
   static const int high_lv = 2000;
+  void low() const; //needed for initialization
+  void high() const;
   void calibrate();
 public:
   Esc(int pin_n);

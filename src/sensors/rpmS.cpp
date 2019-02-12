@@ -51,16 +51,19 @@ data RpmS::readRaw() const{
 }
 #endif /*CPU_ARCH*/
 
-
 data RpmS::interpret(const data & deltaT) const{
-  data RPM;
-  data deltaT_mus = deltaT*4; // Conversion to microseconds... this might overflow the int...
+  dataL RPM;
+  dataL deltaT_mus = dataL(deltaT.value*4,deltaT.error*4); // Conversion to microseconds... this might overflow the int...
+  //data RpmOut;
   if (deltaT > 0){
-      RPM = 60000000.0 / deltaT_mus ;
+      RPM = 60000000.0 / deltaT_mus ; //this is larger than an int!
+      //RpmOut = data(RPM,4);
     }
   else
-      RPM = data(0,460/3);
-  return  RPM;
+      RPM = dataL(0,460/3);
+      //RpmOut = data(0,460/3);
+  //return  RpmOut;
+  return  data(RPM.value,RPM.error); //does it make sense to cast to int?
 }
 
 int RpmS::minValue() const{

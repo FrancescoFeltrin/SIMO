@@ -1,10 +1,26 @@
 #include "../../include/actuators/esc.h"
 #include "../../include/minimalInterface/minInterface.h"
 
-//#include "Servo.h"
+#ifdef ARDUINO_ARCH
+  #include "Servo.h"
+#endif
 
 Esc::Esc(int pinN): pin(pinN){
-  //srv_ptr = new Servo; //the only one servo..
+  #ifdef ARDUINO_ARCH
+    srv_ptr = new Servo; //the only one servo..
+  #endif
+};
+
+void Esc::low() const{
+  #ifdef ARDUINO_ARCH
+    srv_ptr->writeMicroseconds(low_lv);
+  #endif
+};
+
+void Esc::high() const{
+  #ifdef ARDUINO_ARCH
+    srv_ptr->writeMicroseconds(high_lv);
+  #endif
 };
 
 void Esc::setSpeed(float Value){ //this is the only interface to the servo
@@ -13,8 +29,10 @@ void Esc::setSpeed(float Value){ //this is the only interface to the servo
   else if (Value < inputMin())
       Value = inputMin();
   int absValue = (Value/100.0)*(high_lv-low_lv)+low_lv;
-  absValue = absValue*2;
-  //srv_ptr->writeMicroseconds(absValue);
+  absValue = absValue;
+  #ifdef ARDUINO_ARCH
+    srv_ptr->writeMicroseconds(absValue);
+  #endif
 }
 
 void Esc::command(float input){
@@ -23,7 +41,7 @@ void Esc::command(float input){
 
 void Esc::calibrate(){
   //set the max and min speed
-  /*
+  #ifdef ARDUINO_ARCH
   int value = 0;
   bool exit1 = false;
   bool exit2 = false;
@@ -49,11 +67,11 @@ void Esc::calibrate(){
       }
     }
   print2terminal("Initialization is Done! ");
-  //println("Initialization is Done! ");*/
+  #endif
 }
 
 void Esc::initialize(){
-  /*
+  #ifdef ARDUINO_ARCH
   int value = 0;
   int countTo1000 = 0;
   bool exit = false;
@@ -76,7 +94,8 @@ void Esc::initialize(){
   }
   print2terminal("Initialization over.");
   //Serial.print("Initialization over.");
-  low();*/
+  low();
+  #endif
 }
 
 float Esc::inputMin() const{
