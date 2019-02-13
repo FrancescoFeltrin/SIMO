@@ -1,7 +1,7 @@
 #include "../../include/simo/RW.h"
 #include "../../include/sensors/rpmS.h"
 #include "../../include/sensors/currentS.h"
-//#include <math.h>
+
 /*NB: from the RW.h file
 using stateType = Gmatrix<3,1,dataL>;   //State vector size = 3-> angular speed, angular acc, current (mAmp) drawn
 using measureType = Gmatrix<2,1,dataL>; //Number of sensors = 2-> Rpm sensor + Amp sensor.
@@ -67,6 +67,13 @@ controlInputType RW::controlLaw(stateType stateNow ,stateType target) const{
   float rpmTarget = ( target(1)/k + stateNow(0) ).value;
   float pwmControl = rpm2Pwm(rpmTarget);
   return pwmControl;
+};
+
+bool RW::steadyState() const {
+  if ((state[0](1).value == data(0,2) )&&(state[-1](1).value == data(0,2) )&&(state[-2](1).value ==  data(0,2) ))
+    return true; //derivative compatible with zero for all timesteps
+  else
+    return false;
 };
 
 //=== RW specific =============================================================

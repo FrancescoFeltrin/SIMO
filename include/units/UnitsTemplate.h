@@ -17,7 +17,8 @@
   -Assumes the errors are UNCORRELATED GAUSSIAN prob distribution,
   -Assumes you do operations that make sense [unit wise]
   -Comparison like >, < are implemented at 3 sigma -> a<b == true IF you are sure at 99.6%
-  -Comparison like (a == b )  = true IF the probability that they are equal is at least 99.6%
+  -Comparison like (a != b )  = true IF the confidance that they are different > 99.6%
+  -Comparison like (a == b )  = true IF the probability of "compatible" is > 99.6%
 Implemenation details:
   -The type you see on the outside are alias of templates. Alias are used to simplify notation,
   templates are used to avoid repetition and allow different lenght data (float vs int), which
@@ -113,10 +114,10 @@ class Measure{
      return b.lessThanAtSigma(a);
     };
     friend bool operator==(const Measure &a, const Measure &b){
-     return ((!b.lessThanAtSigma(a)) && (!a.lessThanAtSigma(b)));
+      return !(a!=b);      //compatible at 99.6% confidance
     };
     friend bool operator!=(const Measure &a, const Measure &b){
-     return ((b.lessThanAtSigma(a)) || (a.lessThanAtSigma(b)));
+     return ((b.lessThanAtSigma(a)) || (a.lessThanAtSigma(b)));// different with 99.6% probability
     };
     friend bool operator<=(const Measure &a, const Measure &b){
       return ( (a<b) || (a == b));

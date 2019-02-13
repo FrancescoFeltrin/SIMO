@@ -27,7 +27,7 @@ void Esc::setSpeed(float Value){ //this is the only interface to the servo
   if (Value > inputMax())
       Value = inputMax();
   else if (Value < inputMin())
-      Value = inputMin();
+      Value = 0;// this means turn it off!
   int absValue = (Value/100.0)*(high_lv-low_lv)+low_lv;
   absValue = absValue;
   #ifdef ARDUINO_ARCH
@@ -99,7 +99,7 @@ void Esc::initialize(){
 }
 
 float Esc::inputMin() const{
-  return 5;
+  return 4;
 }
 
 float Esc::inputMax() const{

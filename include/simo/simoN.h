@@ -15,10 +15,11 @@ To do:
 #include "../units/units.h"
 #include "../algebra/algebra.h"
 #include "../rStack/rStack.h"
-#include "../../include/statistic/statistic.h"
+//#include "../../include/statistic/statistic.h"
+#include "../../include/statistic/sAnalysis.h"
 
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 template<int nSensors,
          int stateSize,
@@ -64,7 +65,6 @@ template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 SimoN<nSensors,stateSize,nStateTimeRec,nMeasureTimeRec>::SimoN(Actuator& a, Sensor* vec [nSensors] ): act(&a){
   for (int i=0; i<nSensors; ++i)
     sensorV[i] = vec[i];
-  cout<<"SimoN constructor"<<endl;
 }
 
 //------------ Implementation of HIGH LEVEL methods
@@ -78,20 +78,17 @@ void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::getNewMeasure()
     measure.push(newUpdate); //commit to what you have measured
   }*/
   measure.push(newUpdate);
-  cout<<"get New Measure done"<<endl;
 }
 
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::computeControlInput(){
     nextControl = controlLaw(state[0],targetState);
-    cout<<" High level control input"<<endl;
 }
 
 template<int nSensors,int stateSize,int nStateTimeRec,int nMeasureTimeRec>
 void SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTimeRec>::applyControlInput(){
   act->command(nextControl);
   controlInput.push(nextControl);
-  cout<<" contol input applied"<<endl;
 }
 
 //------------ Implementation of LOW LEVEL methods
@@ -115,18 +112,12 @@ Gmatrix<nSensors,1,dataL> SimoN<nSensors, stateSize, nStateTimeRec, nMeasureTime
   timeStamp0 = tStart + (tEnd-tStart)/2; // putting a timestamp in the middle of the measure
   timeStamp.push((timeType) timeStamp0/1000); //save the time of measurament in ms
 
-  data mean_value, std_value, worst_case;
-  dataL worstCaseF;
+  dataL worst_case,worstCaseF;
   for(int i_sensor=0; i_sensor < nSensors ; ++i_sensor){
-      mean_value = mean( matrixRes[i_sensor],n_readout);
-      std_value  = standardDev( matrixRes[i_sensor],n_readout, mean_value);
-      worst_case = data(mean_value.value, std_value.value+mean_value.error);
-      worst_case =  sensorV[i_sensor]->interpret(worst_case);
-      worstCaseF = dataL((float) worst_case.value, (float) worst_case.error);
+      worst_case = sAnalysis(matrixRes[i_sensor],n_readout); //statistical analysis
+      worstCaseF =  sensorV[i_sensor]->interpret(worst_case);
       recordedMeasures(i_sensor) = worstCaseF;
   }
-
-  cout<<" read all sensors, n= "<< n_readout <<" timeStamp "<<timeStamp0 <<endl;
   return recordedMeasures;
 }
 

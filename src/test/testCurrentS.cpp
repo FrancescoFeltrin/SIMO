@@ -19,9 +19,9 @@ TEST_CASE("Current Sensor interpret law","[basics]"){
 }
 
 TEST_CASE("Current Sensor error propagation","[intermediate]"){
-  REQUIRE(CS.interpret( data(512,2) ).error == 98 );
-  REQUIRE(CS.interpret( data(200,2) ).error == 98 );
-  REQUIRE(CS.interpret( data(800,2) ).error == 98 );
+  REQUIRE(CS.interpret( dataL(512,2) ).error == 98 );
+  REQUIRE(CS.interpret( dataL(200,2) ).error == 98 );
+  REQUIRE(CS.interpret( dataL(800,2) ).error == 98 );
 }
 
 TEST_CASE("Test read current Sensor ","[intermediate]"){

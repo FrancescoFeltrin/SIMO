@@ -17,7 +17,7 @@ TEST_CASE("RPM Sensor interpret law", "[basics]"){
 }
 
 TEST_CASE("RPM Sensor error propagation","[intermediate]"){ //these are a bit weird
-  REQUIRE(rpmS.interpret( data(15000,10) ).error == 0 );
-  REQUIRE(rpmS.interpret( data(10000,10) ).error == 1 );
-  REQUIRE(rpmS.interpret( data( 1000,10) ).error == 146 );
+  REQUIRE(rpmS.interpret( dataL(15000,10) ).error == 0 );
+  REQUIRE(rpmS.interpret( dataL(10000,10) ).error == 1 );
+  REQUIRE(rpmS.interpret( dataL( 1000,10) ).error == 146 );
 }

@@ -8,7 +8,7 @@
 class CurrentS: public AnalogS{
 public:
   CurrentS(int,string);
-  virtual data interpret(const data &) const;
+  virtual dataL interpret(const dataL &) const;
 
   virtual int minValue() const;
   virtual int maxValue() const;

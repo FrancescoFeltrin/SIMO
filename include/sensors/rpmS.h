@@ -10,7 +10,7 @@ class RpmS : public HallS{
 public:
   RpmS(int,string);
   virtual data readRaw() const;
-  virtual data interpret(const data &) const;
+  virtual dataL interpret(const dataL &) const;
   virtual int minValue() const;
   virtual int maxValue() const;
   virtual string unit() const;

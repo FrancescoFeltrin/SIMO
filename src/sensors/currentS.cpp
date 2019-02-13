@@ -13,20 +13,14 @@
 
 CurrentS::CurrentS(int pin_n,string id):AnalogS(pin_n,id){}
 
-data CurrentS::interpret(const data & bitRead) const{
+dataL CurrentS::interpret(const dataL & bitRead) const{
   int ACSoffset = 2500;
   int mApermV = 10;
+  dataL mV,mA;
 
-  double mV;
-  double mA;
-  double convmVmA = 48.828125;// =5000 mV /1024 bits * 10mA/mV ;
-
-  mV = ( ((double) bitRead.value) / 1024.0) * 5000; // Gets you mV
+  mV = ( bitRead / 1024.0) * 5000; // Gets you mV
   mA = ((mV - ACSoffset) * mApermV);
-  unsigned int quantizationError = round( ((double) bitRead.error )*convmVmA );
-
-  data output(round(mA),quantizationError);
-  return output;
+  return mA;
 }
 
 int CurrentS::minValue() const{

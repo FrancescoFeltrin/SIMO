@@ -4,10 +4,9 @@
 
 #include "../units/units.h"
 #include "../minimalInterface/minInterface.h"
-// include types & constants of Wiring core API
-//#include <Arduino.h>
+
 /* A minimal interface for a sensor class:
-  - "data" is a class that stores both a value and the error. It automatically perfor
+  - "data" is a class that stores both a value and the error. It automatically perform
     basic error propagation (it adds errors in the "right way")
   - "readRaw" provides the fastest, minimal overhead to read the hardware. It does
     no interpretation of the data.
@@ -19,8 +18,8 @@ class Sensor{
 public:
   Sensor();
   virtual data readRaw() const = 0; // quickest possible way to get data, no processing
-  virtual data interpret(const data &) const = 0; // converts the ADC digital value in the measurement
-  virtual data read(unsigned int = 3) const;      // reads n times and then interprets the average
+  virtual dataL interpret(const dataL &) const = 0; // converts the ADC digital value in the measurement
+  virtual dataL read(unsigned int = 3) const;      // reads n times and then interprets the average
 
   virtual int minValue() const = 0;   // Minium interpreted value
   virtual int maxValue() const = 0;

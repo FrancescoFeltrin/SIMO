@@ -25,7 +25,8 @@ public:
   virtual stateType integrateStateEq(stateType s0,controlInputType u0,timeType deltaT) const;
   virtual measureType observationModel(stateType s) const;
   virtual controlInputType controlLaw(stateType state ,stateType target) const;
-
+  
+  virtual bool steadyState() const;
   //Specific function for the RW
   float  rpm2Pwm(float rpmTarget) const;
   dataL mAmp2Rpm(dataL mA) const;

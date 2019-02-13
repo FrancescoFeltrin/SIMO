@@ -1,25 +1,19 @@
-//#include <vector> //#include <ArduinoSTL.h>
 #include "../../include/sensors/sensor.h"
 #include "../../include/units/units.h"
-#include "../../include/statistic/statistic.h"
-
-//#include <iostream>
-//using namespace std;
+//#include "../../include/statistic/statistic.h"
+#include "../../include/statistic/sAnalysis.h"
 
 Sensor::Sensor(){}
 
-data Sensor::read(unsigned int n) const{
-  //vector<data> raw(n,0);
+dataL Sensor::read(unsigned int n) const{
   data raw[n]; //array
   for (unsigned int i = 0; i < n; i++)
     raw[i] = readRaw();
-  data avg = mean(raw,n);
-  data std = standardDev(raw,n,avg);
-  data worstcase(avg.value, std.value + avg.error); // Is this correct?
+  dataL worstcase = sAnalysis(raw,n);
   return interpret(worstcase);
 }
 
 
-data Sensor::interpret(const data & input) const{
+dataL Sensor::interpret(const dataL & input) const{
   return input;
 }
