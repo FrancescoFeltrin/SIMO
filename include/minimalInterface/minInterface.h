@@ -39,9 +39,21 @@ void writeDigitalPin(bool value);
 void writeAnalogPin(int value);
 
 // Interface
-void print2terminal(const string &); // if available
-void print2terminal(const int &); // if available
-void print2log(const string&); //
+void print2log(const string&); //<< should also be templates...
 void print2log(const int&); //
 bool inputFromTerminal(const string & promt);
+
+// print 2 terminal in template
+template<class T>
+void print2terminal(const T& msg){
+  #ifdef ARDUINO_ARCH
+    Serial.print(msg);
+  #endif
+  #ifdef CPU_ARCH
+    std::cout << msg;
+  #endif
+}
+
+void wait(int); //to be used as little as possible!
+
 #endif

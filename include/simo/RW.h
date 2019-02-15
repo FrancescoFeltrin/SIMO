@@ -4,17 +4,19 @@
 control theory.
 */
 #include "simoN.h"
+#include "labMode.h"
 
 using stateType = Gmatrix<3,1,dataL>; //State vector size = 3 [angular speed, angular acc, current (mAmp)]
 using measureType = Gmatrix<2,1,dataL>; //numeber of sensors = 2, [Rpm sensor, Amp sensor]
 using controlInputType = float;
-using timeType = int;
+using timeType = long int;
 
-class RW: public SimoN<2,3,3,3>{
+class RW: public LabMode<2,3,3,3>{//SimoN<2,3,3,3>{
 public:
   RW();
   RW(Actuator& a, Sensor* vec [2]);// Sensors need to be RPM and Current
-  RW(const RW &) =  default;
+  RW(const RW &) = default;
+  RW& operator=(const RW&) = default;
   //  control functions (HIGH LEVEL).
   // getNewMeasure(); inherited
   virtual void estimateState();
@@ -22,10 +24,10 @@ public:
   // applyControlInput(); inherited
 
   //  Lower level functions
-  virtual stateType integrateStateEq(stateType s0,controlInputType u0,timeType deltaT) const;
-  virtual measureType observationModel(stateType s) const;
+  virtual        stateType integrateStateEq(stateType s0,controlInputType u0,timeType deltaT) const;
+  virtual      measureType observationModel(stateType s) const;
   virtual controlInputType controlLaw(stateType state ,stateType target) const;
-  
+
   virtual bool steadyState() const;
   //Specific function for the RW
   float  rpm2Pwm(float rpmTarget) const;

@@ -6,36 +6,39 @@
 using stateType = Gmatrix<3,1,dataL>;   //State vector size = 3-> angular speed, angular acc, current (mAmp) drawn
 using measureType = Gmatrix<2,1,dataL>; //Number of sensors = 2-> Rpm sensor + Amp sensor.
 using controlInputType = float;
-using timeType = int;
+using timeType = long int;
 */
 
 RW::RW(){};
 
-RW::RW(Actuator& a, Sensor* vec [2] ):SimoN<2,3,3,3>(a,vec){
+RW::RW(Actuator& a, Sensor* vec [2] ):LabMode<2,3,3,3>(a,vec){//SimoN<2,3,3,3>(a,vec){
   Sensor* S1 = vec[0];
   Sensor* S2 = vec[1];
   //check that the right order is respected
+  //NB: RTTI is not permitted by default, so you would need to enable it as explained here
+  // https://arduino.stackexchange.com/questions/37491/arduino-zero-enable-rtti
+
   if (dynamic_cast < RpmS* >(S1) ){
     if (dynamic_cast < CurrentS* >(S2) ){
         //SimoN(a,vec);
-        //print2terminal("RW constructor to good end ");
+        print2terminal("RW constructor to good end ");
     }
   }
   else{
-    //print2terminal("Warning! Sensor list does not match expectations!->[rpm,current] ");
+    print2terminal("Warning! Sensor list does not match expectations!->[rpm,current] ");
   }
 };
 
 void RW::estimateState(){
   //Get speed, acc and current from measuraments
   stateType currentState;
-  timeType deltaT;
+  timeType deltaT; //in mu seconds
   if (timeStamp[0]>timeStamp[-1])
     deltaT = timeStamp[0]-timeStamp[-1];
   if (timeStamp[0]<=timeStamp[-1])
     deltaT = timeStamp[-1]-timeStamp[-2]; //in case the reset timer occurs in between
   currentState(0) = measure[0](0);//speed is copied
-  currentState(1) = ( measure[0](0)-measure[-1](0) )/deltaT ;
+  currentState(1) = ( measure[0](0)-measure[-1](0) )/deltaT*1000000 ;// [rpm/s]
   currentState(2) = measure[0](1); //copy mAmps
   state.push( currentState);
 };

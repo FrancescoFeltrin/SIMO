@@ -9,7 +9,7 @@
 #endif
 
 #ifdef ARDUINO_ARCH
-  #include <cmath.h>
+  #include <math.h>
 #endif
 
 
@@ -23,7 +23,7 @@ Implemenation details:
   -The type you see on the outside are alias of templates. Alias are used to simplify notation,
   templates are used to avoid repetition and allow different lenght data (float vs int), which
   is something you need in microprocessors (like arduino).
-  -In oredr to behave algebrically as expected (both with other measurement and
+  -In order to behave algebrically as expected (both with other measurement and
   with exact numbers) external overload of aritmetic is implemented with friend.
   In this way you should be able to to  a+b, a+5, 5+a ,a+5.0 as long as you have a
   constructor able to convert from TYPE of 5.0 to measure.
@@ -46,9 +46,6 @@ To improve :
   loosing too much accuracy.
 */
 
-//#include<iostream> // only for debugging pourposes
-//using namespace std;
-
 template <class V,class E>
 class Measure{
   private:
@@ -59,10 +56,13 @@ class Measure{
     Measure(){}; //to allocate
     Measure(const V& mean ,const E& sigma ): value(mean),error(sigma){};
     //As long as you have constructors for it, arithmetic should work
+    //template<class T> Measure(const T& mean): value((V) mean),error(0){}; <- Why does this not work?
     Measure(const int& mean): value((V) mean),error(0){};
     Measure(const unsigned int& mean): value((V) mean),error(0){};
+    Measure(const long int& mean): value((V) mean),error(0){};
     Measure(const float & mean): value((V) mean),error(0){};
     Measure(const double & mean): value((V) mean),error(0){};
+
     Measure(const Measure & ) = default;
     Measure& operator = (const Measure & assigned){
       this->value = assigned.value;
@@ -114,10 +114,12 @@ class Measure{
      return b.lessThanAtSigma(a);
     };
     friend bool operator==(const Measure &a, const Measure &b){
-      return !(a!=b);      //compatible at 99.6% confidance
-    };
+      //compatible at 96% confidance
+      return !(a!=b);
+      };
     friend bool operator!=(const Measure &a, const Measure &b){
-     return ((b.lessThanAtSigma(a)) || (a.lessThanAtSigma(b)));// different with 99.6% probability
+      //not equal to 96% confidence
+      return ((b.lessThanAtSigma(a)) || (a.lessThanAtSigma(b)));
     };
     friend bool operator<=(const Measure &a, const Measure &b){
       return ( (a<b) || (a == b));
@@ -185,14 +187,14 @@ bool Measure<V,E>::lessThanAtSigma(const Measure& target, float Sigma) const{
 
 //--------- External Overloading, which don't care about order
 #ifdef CPU_ARCH
-  template<class V,class E>
-  std::ostream& operator<<(std::ostream& os,const Measure<V,E>& m){
-    if ( m.error > 0)
-      return os << m.value << " +- "<< m.error;
-    else
-      return os << m.value;
-  }
-#endif /*CUP_ARCH */
+template<class V,class E>
+std::ostream& operator<<(std::ostream& os,const Measure<V,E>& m){
+  if ( m.error > 0)
+    return os << m.value << " +- "<< m.error;
+  else
+    return os << m.value;
+}
+#endif /*CPU_ARCH */
 /*template <class V,class E>
 Measure<V,E> operator+(const Measure<V,E> & a, const Measure<V,E> & b){
   // For some reason it does not work...

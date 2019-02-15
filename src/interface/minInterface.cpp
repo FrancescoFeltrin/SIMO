@@ -4,6 +4,7 @@
 */
 
 #ifdef ARDUINO_ARCH
+
 unsigned long int timeMicro(){
   return micros();// for arduino
 }
@@ -33,13 +34,7 @@ void writeAnalogPin(int pin, int value){
 }
 
 // Interface
-void print2terminal(const string & msg){
-   Serial.print(msg);
-}
-
-void print2terminal(const int & value){
-  Serial.print(value);
-}
+// void print2terminal(const T& msg) is a template so it is not implemented here
 
 void print2log(const string& msg){
      Serial.print("LOG:");
@@ -66,7 +61,15 @@ bool inputFromTerminal(const string & promt){
   else print2terminal(" Input not recognized");
   return false;
 }
+
+void wait(int ms){
+  delay(ms);
+}
 #endif /* ARDUINO_ARCH */
+
+
+
+
 /////// CPU
 #ifdef CPU_ARCH
 #include <iostream>
@@ -105,12 +108,10 @@ void writeAnalogPin(int pin, int value){
 
 
 // Interface
-void print2terminal(const string & msg){
-  cout<<msg;
-}
+// void print2terminal(const T& msg) is a template so it is not implemented here
 
-void print2terminal(const int & value){
-  cout<<value;
+void wait(int ms){
+    std::cout<<"\n -wait "<< ms <<std::endl;
 }
 
 void print2log(const string& msg){

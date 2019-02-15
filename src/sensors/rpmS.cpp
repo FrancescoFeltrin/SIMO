@@ -62,7 +62,7 @@ dataL RpmS::interpret(const dataL & deltaT) const{
       RPM = 60000000.0 / deltaT_mus ; //this is larger than an int!
     }
   else
-      RPM = dataL(0,460/3);
+      RPM = dataL(0,460/3); //I am sure that it is between [-460,+460]-> 3 sigma
   return  RPM;
 }
 
